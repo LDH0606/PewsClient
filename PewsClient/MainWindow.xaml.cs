@@ -164,6 +164,7 @@ namespace PewsClient
 
             StartLocalSimIfExists();
 
+            //StartSimulation("2016000291", "20160912203254"); // 경주 5.8
 #if DEBUG
             //StartSimulation("2017000407", "20171115142931"); // 포항 5.4
             //StartSimulation("2016000291", "20160912203254"); // 경주 5.8
@@ -257,6 +258,29 @@ namespace PewsClient
             Properties.Settings.Default.Save();
         }
 
+        private void WindowPopup()
+        {
+            if (!chkWindowPopup.IsChecked)
+            {
+                return;
+            }
+
+            var topMostReset = false;
+            this.Show();
+            if (!this.Topmost)
+            {
+                this.Topmost = true;
+                topMostReset = true;
+            }
+            this.WindowState = WindowState.Normal;
+            if (topMostReset)
+            {
+                this.Topmost = false;
+            }
+
+            Debug.WriteLine("창 팝업");
+        }
+
         private async void Timer_Tick(object sender, EventArgs e)
         {
             bool bCheckLag = false;
@@ -320,6 +344,7 @@ namespace PewsClient
                             if (err is WebException || err is TimeoutException)
                             {
                                 txtStatus.Text = "Loading";
+                                txtServerTime.Foreground = Brushes.Red;
 
                                 if (!m_simMode)
                                 {
@@ -372,6 +397,11 @@ namespace PewsClient
                     // 시간 표시 갱신.
                     m_serverTime = DateTime.Now.AddMilliseconds(-m_tide);
                     txtServerTime.Text = m_serverTime.ToString("yyyy-MM-dd HH:mm:ss");
+                    if (m_simMode)
+                    {
+                        txtServerTime.Text += " ( Simulation )";
+                    }
+                    txtServerTime.Foreground = !m_simMode ? Brushes.White : Brushes.Yellow;
 
 
                     var headerBuff = new StringBuilder();
@@ -677,6 +707,11 @@ namespace PewsClient
                             {
                                 m_wavUpdate[maxMmi].Stop();
                                 m_wavUpdate[maxMmi].Play();
+                            }
+
+                            if (phase > 1)
+                            {
+                                WindowPopup();
                             }
                         }
 
@@ -1231,6 +1266,8 @@ namespace PewsClient
                         g.DrawRectangle(m_mmiStagePens[mmiStage],
                             left - ClusterPadding, top - ClusterPadding,
                             right - left + ClusterPadding * 2, bottom - top + ClusterPadding * 2);
+
+                        WindowPopup();
                     }
                 }
 
@@ -1777,6 +1814,7 @@ namespace PewsClient
 
                     m_prevAlarmId = alarmId;
                 }
+                WindowPopup();
             }
 
             return eqkId;
