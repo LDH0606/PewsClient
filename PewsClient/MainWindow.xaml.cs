@@ -164,7 +164,6 @@ namespace PewsClient
 
             StartLocalSimIfExists();
 
-            //StartSimulation("2016000291", "20160912203254"); // 경주 5.8
 #if DEBUG
             //StartSimulation("2017000407", "20171115142931"); // 포항 5.4
             //StartSimulation("2016000291", "20160912203254"); // 경주 5.8
@@ -177,6 +176,8 @@ namespace PewsClient
             //StartSimulation("2020005363", "20200511194506"); // 북한 3.8
             //StartSimulation("2020018042", "20201218171723"); // 강원 2.7
             //StartSimulation("2021000517", "20210203121756"); // 인천 2.2
+            //StartSimulation("2021004765", "20210821094040"); // 전북 4.0
+            //StartSimulation("2021007178", "20211214171916"); // 제주 4.9
 
             //StartSimulation("2020123456", "20000101090002", true); // 가상
 #endif
