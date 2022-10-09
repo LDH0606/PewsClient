@@ -141,7 +141,18 @@ namespace PewsClient
         private readonly int MinClusterSize = 3;
         private readonly double ClusterDistance = 50.0;
 
+        System.Windows.Forms.NotifyIcon notifyIcon = new System.Windows.Forms.NotifyIcon();
+
         //#############################################################################################
+        protected override void OnStateChanged(EventArgs e)
+        {
+            if (WindowState.Minimized.Equals(WindowState))
+            {
+                this.Hide();
+            }
+
+            base.OnStateChanged(e);
+        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -198,6 +209,43 @@ namespace PewsClient
                     }
                 }
             });
+
+            if (WindowState == WindowState.Minimized)
+            {
+                Hide();
+            }
+            try
+            {
+                System.Windows.Forms.ContextMenu menu = new System.Windows.Forms.ContextMenu();
+
+
+                notifyIcon.Icon = Properties.Resources.Icon;
+                notifyIcon.Visible = true;
+                notifyIcon.DoubleClick += delegate (object senders, EventArgs args)
+                {
+                    this.Show();
+                    this.WindowState = WindowState.Normal;
+                };
+
+                notifyIcon.ContextMenu = menu;
+                notifyIcon.Text = "PEWS Client";
+
+                System.Windows.Forms.MenuItem btnExit = new System.Windows.Forms.MenuItem();
+
+                menu.MenuItems.Add(btnExit);
+
+                btnExit.Index = 0;
+                btnExit.Text = "종료";
+                btnExit.Click += delegate (object click, EventArgs eClick)
+                {
+                    SaveSettings();
+                    Application.Current.Shutdown();
+                };
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err);
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -1758,6 +1806,11 @@ namespace PewsClient
             var stnNameSet = new HashSet<string>();
             for (int i = 0; i < stnLat.Count; ++i)
             {
+                // 울릉도 관측소 강제 표출
+                if (stnLat[i] > 37 && stnLat[i] < 38 && stnLon[i] > 119 && stnLon[i] < 121)
+                {
+                    stnLon[i] += 10;
+                }
                 var info = m_stationDb.GetStationInfoAround(stnLat[i], stnLon[i]);
 
 #if DEBUG
